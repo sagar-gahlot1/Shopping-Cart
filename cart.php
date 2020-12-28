@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 try {
 	if(isset($_SESSION["name"])){}
 	else{
@@ -54,6 +55,8 @@ if (isset($_POST['action']) && $_POST['action']=="change"){
 <?php
 if(!empty($_SESSION["shopping_cart"])) {
 $cart_count = count(array_keys($_SESSION["shopping_cart"]));
+
+
 ?>
 <div class="cart_div">
 <a href="cart.php">
@@ -109,6 +112,19 @@ foreach ($_SESSION["shopping_cart"] as $product){
 <?php
 $total_price += ($product["price"]*$product["quantity"]);
 }
+
+$con1 = mysqli_connect('127.0.0.1:3306','root','','karan') or die('Unable To connect');
+$id=$_SESSION["id"];
+$shopc=serialize($_SESSION["shopping_cart"]);
+ $sql="UPDATE `login_user` SET `cart`='$shopc' WHERE `id`=$id";
+ if ($con1->query($sql) === TRUE) {
+	
+} else {
+	echo "Error updating record: " . $con1->error;
+  }
+  
+  $con1->close();
+
 ?>
 <tr>
 <td colspan="5" align="right">
@@ -121,6 +137,21 @@ $total_price += ($product["price"]*$product["quantity"]);
   <?php
 }else{
 	echo "<h3>Your cart is empty!</h3>";
+	echo "<a href='main.php'>Go Back</a>";
+
+	$con1 = mysqli_connect('127.0.0.1:3306','root','','karan') or die('Unable To connect');
+	$id=$_SESSION["id"];
+	 $sql="UPDATE `login_user` SET `cart`=NULL WHERE `id`=$id";
+	 if ($con1->query($sql) === TRUE) {
+		
+	} else {
+		echo "Error updating record: " . $con1->error;
+	  }	  
+	  $con1->close();
+	
+
+
+
 	}
 ?>
 </div>
@@ -138,3 +169,5 @@ $total_price += ($product["price"]*$product["quantity"]);
 <?php
 }else echo "<h1>Please login first .</h1>";
 ?>
+
+

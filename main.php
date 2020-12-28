@@ -1,5 +1,24 @@
 <?php
 session_start();
+
+// UPDATE `login_user` SET  `cart`=null  WHERE  `id`=200
+
+if( !defined('FOO_EXECUTED') ){
+    $con1 = mysqli_connect('127.0.0.1:3306','root','','karan') or die('Unable To connect');
+$id=$_SESSION["id"];
+$temp=mysqli_query($con1,"SELECT `cart` FROM `login_user` WHERE id=$id");
+
+$row1 = mysqli_fetch_assoc($temp);
+$temp1=$row1['cart'];
+$_SESSION["shopping_cart"]=unserialize($temp1);
+//echo gettype($temp1);
+
+mysqli_close($con1);
+    define('FOO_EXECUTED', TRUE);
+}
+
+
+
 try {
 	if(isset($_SESSION["name"])){}
 	else{
@@ -29,6 +48,8 @@ Welcome <?php echo $_SESSION["name"]; ?>. Click here to <a href="logout.php" tit
 
 <?php
 include('db.php');
+
+
 $status="";
 if (isset($_POST['code']) && $_POST['code']!=""){
 $code = $_POST['code'];
@@ -39,6 +60,7 @@ $code = $row['code'];
 $price = $row['price'];
 $image = $row['image'];
 
+
 $cartArray = array(
 	$code=>array(
 	'name'=>$name,
@@ -48,9 +70,25 @@ $cartArray = array(
 	'image'=>$image)
 );
 
+
+
+
 if(empty($_SESSION["shopping_cart"])) {
 	$_SESSION["shopping_cart"] = $cartArray;
 	$status = "<div class='box'>Product is added to your cart!</div>";
+
+	$con1 = mysqli_connect('127.0.0.1:3306','root','','karan') or die('Unable To connect');
+$id=$_SESSION["id"];
+$shopc=serialize($_SESSION["shopping_cart"]);
+ $sql="UPDATE `login_user` SET `cart`='$shopc' WHERE `id`=$id";
+ if ($con1->query($sql) === TRUE) {
+	
+  } else {
+	echo "Error updating record: " . $con1->error;
+  }
+  $con1->close();
+
+
 }else{
 	$array_keys = array_keys($_SESSION["shopping_cart"]);
 	if(in_array($code,$array_keys)) {
@@ -58,11 +96,25 @@ if(empty($_SESSION["shopping_cart"])) {
 		Product is already added to your cart!</div>";	
 	} else {
 	$_SESSION["shopping_cart"] = array_merge($_SESSION["shopping_cart"],$cartArray);
+
+    
+$con1 = mysqli_connect('127.0.0.1:3306','root','','karan') or die('Unable To connect');
+$id=$_SESSION["id"];
+$shopc=serialize($_SESSION["shopping_cart"]);
+ $sql="UPDATE `login_user` SET `cart`='$shopc' WHERE `id`=$id";
+ if ($con1->query($sql) === TRUE) {
+	
+  } else {
+	echo "Error updating record: " . $con1->error;
+  }
+  $con1->close();
+
 	$status = "<div class='box'>Product is added to your cart!</div>";
 	}
 
 	}
 }
+
 ?>
 <html>
 <head>

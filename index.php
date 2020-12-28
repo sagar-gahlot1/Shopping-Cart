@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 try {
 	if(isset($_SESSION["name"])){}
 	else{
@@ -47,6 +48,8 @@ if(empty($_SESSION["shopping_cart"])) {
 	$_SESSION["shopping_cart"] = array_merge($_SESSION["shopping_cart"],$cartArray);
 	$status = "<div class='box'>Product is added to your cart!</div>";
 	}
+
+
 
 	}
 }
